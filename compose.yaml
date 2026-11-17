@@ -42,10 +42,12 @@ services:
       kafka:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/health || exit 1"]
+      # The AKHQ image has curl but no wget; /health is served on the management port.
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:28081/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12
+      start_period: 30s
     restart: unless-stopped
 volumes:
   kafka-data:
